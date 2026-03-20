@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Roblox Ban System</title>
+<title>Global Ban List</title>
 <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
   :root {
@@ -484,7 +484,8 @@
   <header>
     <div class="logo-area">
       <h1>Roblox Ban System</h1>
-      <p>Managed by members of UnforeStudios & Others</p>
+      <p>Maintained by Unforetold & FearedFusionX, Inspired by zv8001</p>
+      <div class="tag live">LIVE</div>
     </div>
     <button id="admin-login-btn" onclick="openLogin()">[ admin login ]</button>
   </header>
@@ -570,7 +571,7 @@
   <!-- API hint -->
   <div class="api-hint">
     <p>Roblox GET endpoint</p>
-    <code id="api-url">https://YOUR_PROJECT.supabase.co/rest/v1/bans?select=*&apikey=YOUR_ANON_KEY</code>
+    <code id="api-url">Download the Server Code</code>
   </div>
 </div>
 
@@ -593,6 +594,24 @@
 
 <!-- Toast -->
 <div class="toast" id="toast"></div>
+
+<!-- Password set/reset modal -->
+<div id="reset-modal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.8); z-index:200; align-items:center; justify-content:center;">
+  <div class="modal-box">
+    <h2 id="reset-title">Set your password</h2>
+    <p style="font-size:0.78rem; color:var(--muted); font-family:var(--mono); margin-bottom:1.2rem;" id="reset-subtitle">Choose a password for your admin account.</p>
+    <div class="field">
+      <label>New Password</label>
+      <input type="password" id="reset-pw" placeholder="••••••••" />
+    </div>
+    <div class="field">
+      <label>Confirm Password</label>
+      <input type="password" id="reset-pw2" placeholder="••••••••" />
+    </div>
+    <p class="modal-err" id="reset-err">Passwords do not match.</p>
+    <button class="btn-primary" onclick="doSetPassword()">Set Password</button>
+  </div>
+</div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
@@ -724,6 +743,65 @@
   sb.auth.getSession().then(({ data: { session } }) => {
     if (session) onAdminLogin(session.user);
   });
+
+  // ── Password reset/invite token detection ──────────────────────────────────
+  // Supabase puts #access_token=...&type=recovery (or invite) in the URL hash
+  (function checkResetToken() {
+    const hash = window.location.hash;
+    if (!hash) return;
+    const params = new URLSearchParams(hash.replace('#', ''));
+    const type = params.get('type');
+    if (type === 'recovery' || type === 'invite' || type === 'signup') {
+      // Supabase JS v2 picks up the token from the URL automatically
+      // We just need to listen for the session being set, then show the form
+      sb.auth.onAuthStateChange((event, session) => {
+        if ((event === 'PASSWORD_RECOVERY' || event === 'SIGNED_IN') && session) {
+          const modal = document.getElementById('reset-modal');
+          const title = document.getElementById('reset-title');
+          const sub   = document.getElementById('reset-subtitle');
+          if (type === 'invite' || type === 'signup') {
+            title.textContent = 'Welcome — set your password';
+            sub.textContent   = 'You have been invited as an admin. Set a password to continue.';
+          } else {
+            title.textContent = 'Reset your password';
+            sub.textContent   = 'Enter a new password for your admin account.';
+          }
+          modal.style.display = 'flex';
+          // Clear the hash so it doesn't trigger again on refresh
+          history.replaceState(null, '', window.location.pathname);
+        }
+      });
+    }
+  })();
+
+  async function doSetPassword() {
+    const pw  = document.getElementById('reset-pw').value;
+    const pw2 = document.getElementById('reset-pw2').value;
+    const err = document.getElementById('reset-err');
+    err.style.display = 'none';
+
+    if (pw.length < 6) {
+      err.textContent = 'Password must be at least 6 characters.';
+      err.style.display = 'block';
+      return;
+    }
+    if (pw !== pw2) {
+      err.textContent = 'Passwords do not match.';
+      err.style.display = 'block';
+      return;
+    }
+
+    const { data, error } = await sb.auth.updateUser({ password: pw });
+    if (error) {
+      err.textContent = error.message;
+      err.style.display = 'block';
+      return;
+    }
+
+    document.getElementById('reset-modal').style.display = 'none';
+    showToast('Password set! You are now logged in.', 'success');
+    onAdminLogin(data.user);
+  }
 
   // ── Helpers ────────────────────────────────────────────────────────────────
   function esc(str) {
