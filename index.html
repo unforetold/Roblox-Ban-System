@@ -546,7 +546,7 @@
   <!-- Search -->
   <div class="search-wrap">
     <span class="search-icon">⌕</span>
-    <input type="text" id="search" placeholder="search by username or user id..." oninput="filterBans()" />
+    <input type="text" id="search" placeholder="search by user id..." oninput="filterBans()" />
   </div>
 
   <!-- Ban table -->
@@ -554,17 +554,14 @@
     <table>
       <thead>
         <tr>
-          <th>Username</th>
           <th>User ID</th>
           <th>Category</th>
           <th>Reason</th>
-          <th>Banned</th>
-          <th>Status</th>
           <th id="action-col" style="display:none;">Action</th>
         </tr>
       </thead>
       <tbody id="ban-tbody">
-        <tr><td colspan="7" class="empty-state">Loading ban list...</td></tr>
+        <tr><td colspan="4" class="empty-state">Loading ban list...</td></tr>
       </tbody>
     </table>
   </div>
@@ -688,17 +685,14 @@
   function renderTable(bans) {
     const tbody = document.getElementById('ban-tbody');
     if (!bans.length) {
-      tbody.innerHTML = '<tr><td colspan="7" class="empty-state">No bans found.</td></tr>';
+      tbody.innerHTML = '<tr><td colspan="4" class="empty-state">No bans found.</td></tr>';
       return;
     }
     tbody.innerHTML = bans.map(b => `
       <tr data-id="${b.id}">
-        <td><span class="username">${esc(b.username)}</span></td>
         <td><span class="date">${esc(b.user_id || '—')}</span></td>
         <td><span class="reason-pill ${b.category || 'other'}">${b.category || 'other'}</span></td>
         <td style="color:var(--muted); max-width:240px; word-break:break-word;">${esc(b.reason || '—')}</td>
-        <td><span class="date">${fmtDate(b.banned_at)}</span></td>
-        <td><span class="ban-badge">BANNED</span></td>
         <td><button class="btn-unban" onclick="removeBan('${b.id}')">Unban</button></td>
       </tr>
     `).join('');
@@ -707,8 +701,8 @@
   function filterBans() {
     const q = document.getElementById('search').value.toLowerCase().trim();
     if (!q) { renderTable(allBans); return; }
+    // Search only by user id now (username removed from list)
     renderTable(allBans.filter(b =>
-      (b.username || '').toLowerCase().includes(q) ||
       (b.user_id  || '').toLowerCase().includes(q)
     ));
   }
