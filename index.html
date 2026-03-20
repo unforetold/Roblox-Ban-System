@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>// Roblox Ban System</title>
+<title>Global Ban List</title>
 <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
   :root {
@@ -483,8 +483,9 @@
 <div class="wrap">
   <header>
     <div class="logo-area">
-      <h1>Roblox Ban System</h1>
-      <p>Maintained by Unforetold & FearedFusionX, Inspired by zv8001</p>
+      <h1>// global_ban_list</h1>
+      <p>Managed by your game's moderation team</p>
+      <div class="tag live">LIVE</div>
     </div>
     <button id="admin-login-btn" onclick="openLogin()">[ admin login ]</button>
   </header>
@@ -532,8 +533,9 @@
         </select>
       </div>
     </div>
-    <div style="margin-top: 10px;">
+    <div style="margin-top: 10px; display:flex; gap:8px; flex-wrap:wrap;">
       <button class="btn-ban" onclick="addBan()">+ Add Ban</button>
+      <button class="btn-ban" style="background:transparent; border:1px solid var(--border2); color:var(--muted);" onmouseover="this.style.borderColor='var(--accent)';this.style.color='var(--accent2)'" onmouseout="this.style.borderColor='var(--border2)';this.style.color='var(--muted)'" onclick="openImport()">⬆ Bulk Import</button>
     </div>
     <div class="admin-footer">
       <span id="admin-user-label">logged in as: —</span>
@@ -570,7 +572,7 @@
   <!-- API hint -->
   <div class="api-hint">
     <p>Roblox GET endpoint</p>
-    <code id="api-url">Download the Server Code</code>
+    <code id="api-url">https://YOUR_PROJECT.supabase.co/rest/v1/bans?select=*&apikey=YOUR_ANON_KEY</code>
   </div>
 </div>
 
@@ -593,6 +595,43 @@
 
 <!-- Toast -->
 <div class="toast" id="toast"></div>
+
+<!-- Bulk import modal -->
+<div id="import-modal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.8); z-index:200; align-items:center; justify-content:center;">
+  <div class="modal-box" style="width:520px; max-width:calc(100vw - 2rem);">
+    <h2>Bulk Import <button id="import-close" style="float:right;background:none;border:none;color:var(--muted);cursor:pointer;font-size:1.2rem;line-height:1;margin-top:-4px;" onclick="closeImport()">×</button></h2>
+    <p style="font-size:0.75rem; color:var(--muted); font-family:var(--mono); margin-bottom:1rem;">Accepts the <code style="color:var(--green);">USERID: 123 MESSAGE: reason</code> format, or a JSON array.</p>
+
+    <div style="display:flex; gap:8px; margin-bottom:10px;">
+      <button id="fmt-raw" class="btn-ban" style="font-size:0.72rem; padding:5px 12px;" onclick="setFmt('raw')">EEI Raw Format</button>
+      <button id="fmt-json" class="btn-ban" style="font-size:0.72rem; padding:5px 12px; background:transparent; border:1px solid var(--border2); color:var(--muted);" onclick="setFmt('json')">JSON Array</button>
+    </div>
+
+    <div class="field">
+      <label id="import-label">Paste raw ban text</label>
+      <textarea id="import-data" rows="8" style="background:var(--surface2);border:1px solid var(--border);border-radius:6px;color:var(--text);font-family:var(--mono);font-size:0.75rem;padding:8px 10px;width:100%;outline:none;resize:vertical;" placeholder="USERID: 123 MESSAGE: Exploiting,USERID: 456 MESSAGE: Spam..."></textarea>
+    </div>
+
+    <div id="import-preview" style="display:none; margin-bottom:10px;">
+      <p style="font-size:0.72rem; font-family:var(--mono); color:var(--muted); margin-bottom:6px;" id="preview-label"></p>
+      <div style="background:var(--surface2); border:1px solid var(--border); border-radius:6px; padding:8px 10px; max-height:140px; overflow-y:auto; font-family:var(--mono); font-size:0.72rem; color:var(--text);" id="preview-list"></div>
+    </div>
+
+    <p class="modal-err" id="import-err">Parse error.</p>
+
+    <div style="display:flex; gap:8px; margin-top:4px;">
+      <button class="btn-primary" style="flex:0 0 auto; width:auto; padding:10px 20px;" onclick="previewImport()">Preview</button>
+      <button class="btn-primary" id="btn-confirm-import" style="flex:1; display:none;" onclick="confirmImport()">Import All</button>
+    </div>
+
+    <div id="import-progress" style="display:none; margin-top:10px; font-family:var(--mono); font-size:0.75rem; color:var(--muted);">
+      <div style="background:var(--border); border-radius:4px; height:6px; overflow:hidden; margin-bottom:6px;">
+        <div id="import-bar" style="background:var(--accent2); height:100%; width:0%; transition:width 0.3s;"></div>
+      </div>
+      <span id="import-status">Importing...</span>
+    </div>
+  </div>
+</div>
 
 <!-- Password set/reset modal -->
 <div id="reset-modal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.8); z-index:200; align-items:center; justify-content:center;">
@@ -742,6 +781,155 @@
   sb.auth.getSession().then(({ data: { session } }) => {
     if (session) onAdminLogin(session.user);
   });
+
+  // ── Bulk Import ────────────────────────────────────────────────────────────
+  let importFmt = 'raw';
+  let parsedImport = [];
+
+  function openImport() {
+    document.getElementById('import-modal').style.display = 'flex';
+    document.getElementById('import-preview').style.display = 'none';
+    document.getElementById('btn-confirm-import').style.display = 'none';
+    document.getElementById('import-err').style.display = 'none';
+    document.getElementById('import-progress').style.display = 'none';
+    document.getElementById('import-data').value = '';
+  }
+
+  function closeImport() {
+    document.getElementById('import-modal').style.display = 'none';
+  }
+
+  function setFmt(fmt) {
+    importFmt = fmt;
+    const rawBtn  = document.getElementById('fmt-raw');
+    const jsonBtn = document.getElementById('fmt-json');
+    const lbl     = document.getElementById('import-label');
+    const ta      = document.getElementById('import-data');
+    if (fmt === 'raw') {
+      rawBtn.style.background  = 'var(--accent)';   rawBtn.style.color  = 'white'; rawBtn.style.border = 'none';
+      jsonBtn.style.background = 'transparent';     jsonBtn.style.color = 'var(--muted)'; jsonBtn.style.border = '1px solid var(--border2)';
+      lbl.textContent = 'Paste raw ban text';
+      ta.placeholder  = 'USERID: 123 MESSAGE: Exploiting,USERID: 456 MESSAGE: Spam...';
+    } else {
+      jsonBtn.style.background = 'var(--accent)';   jsonBtn.style.color  = 'white'; jsonBtn.style.border = 'none';
+      rawBtn.style.background  = 'transparent';     rawBtn.style.color   = 'var(--muted)'; rawBtn.style.border = '1px solid var(--border2)';
+      lbl.textContent = 'Paste JSON array';
+      ta.placeholder  = '[{"user_id":"123","reason":"Exploiting"},...]';
+    }
+    document.getElementById('import-preview').style.display = 'none';
+    document.getElementById('btn-confirm-import').style.display = 'none';
+    document.getElementById('import-err').style.display = 'none';
+  }
+
+  function parseRaw(text) {
+    // Split on commas that precede USERID: (handles commas in messages)
+    const entries = text.split(/,\s*(?=USERID[\s:])/i);
+    const results = [];
+    for (const entry of entries) {
+      const trimmed = entry.trim();
+      if (!trimmed) continue;
+      // Extract USERID (handles missing colon edge cases in source data)
+      const idMatch  = trimmed.match(/USERID[:\s]+(\d+)/i);
+      const msgMatch = trimmed.match(/MESSAGE[:\s]+(.*)/i);
+      if (!idMatch) continue;
+      const user_id = idMatch[1].trim();
+      const reason  = msgMatch ? msgMatch[1].trim() : '';
+      // Auto-categorise based on keywords
+      const r = reason.toLowerCase();
+      let category = 'other';
+      if (r.includes('exploit') || r.includes('hack') || r.includes('cheat')) category = 'exploit';
+      else if (r.includes('spam') || r.includes('bot') || r.includes('scam')) category = 'spam';
+      else if (r.includes('asset') || r.includes('stolen') || r.includes('theft')) category = 'abuse';
+      else if (r.includes('safety') || r.includes('concern') || r.includes('inappropriate')) category = 'abuse';
+      results.push({ user_id, username: '', reason, category, banned_at: new Date().toISOString() });
+    }
+    return results;
+  }
+
+  function parseJSON(text) {
+    const arr = JSON.parse(text);
+    if (!Array.isArray(arr)) throw new Error('Expected a JSON array');
+    return arr.map(entry => ({
+      user_id:    String(entry.user_id   || entry.userId   || entry.id  || ''),
+      username:   String(entry.username  || entry.name     || ''),
+      reason:     String(entry.reason    || entry.message  || entry.msg || ''),
+      category:   String(entry.category  || 'other'),
+      banned_at:  entry.banned_at || new Date().toISOString()
+    }));
+  }
+
+  function previewImport() {
+    const err = document.getElementById('import-err');
+    err.style.display = 'none';
+    const text = document.getElementById('import-data').value.trim();
+    if (!text) { err.textContent = 'Paste some data first.'; err.style.display = 'block'; return; }
+
+    try {
+      parsedImport = importFmt === 'raw' ? parseRaw(text) : parseJSON(text);
+    } catch(e) {
+      err.textContent = 'Parse error: ' + e.message;
+      err.style.display = 'block';
+      return;
+    }
+
+    if (!parsedImport.length) {
+      err.textContent = 'No valid entries found.';
+      err.style.display = 'block';
+      return;
+    }
+
+    // Deduplicate against existing bans
+    const existingIds = new Set(allBans.map(b => b.user_id));
+    const newOnly = parsedImport.filter(b => !existingIds.has(b.user_id));
+    const dupes   = parsedImport.length - newOnly.length;
+    parsedImport  = newOnly;
+
+    const preview = document.getElementById('preview-list');
+    const label   = document.getElementById('preview-label');
+    label.textContent = `${parsedImport.length} new entries (${dupes} duplicates skipped)`;
+    preview.innerHTML = parsedImport.slice(0, 50).map(b =>
+      `<div style="padding:2px 0; border-bottom:1px solid var(--border); display:flex; gap:10px;">
+        <span style="color:var(--accent2); min-width:90px;">${b.user_id || '—'}</span>
+        <span style="color:var(--muted); flex:1; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${esc(b.reason)}</span>
+        <span style="color:var(--amber);">[${b.category}]</span>
+      </div>`
+    ).join('') + (parsedImport.length > 50 ? `<div style="color:var(--muted); padding-top:4px;">...and ${parsedImport.length - 50} more</div>` : '');
+
+    document.getElementById('import-preview').style.display = 'block';
+    document.getElementById('btn-confirm-import').style.display = parsedImport.length ? 'block' : 'none';
+    document.getElementById('btn-confirm-import').textContent = `Import ${parsedImport.length} Bans`;
+  }
+
+  async function confirmImport() {
+    if (!parsedImport.length) return;
+    const progress = document.getElementById('import-progress');
+    const bar      = document.getElementById('import-bar');
+    const status   = document.getElementById('import-status');
+    progress.style.display = 'block';
+    document.getElementById('btn-confirm-import').disabled = true;
+
+    // Insert in batches of 50
+    const BATCH = 50;
+    let done = 0;
+    for (let i = 0; i < parsedImport.length; i += BATCH) {
+      const batch = parsedImport.slice(i, i + BATCH);
+      const { error } = await sb.from('bans').insert(batch);
+      if (error) {
+        showToast('Import error: ' + error.message, 'error');
+        break;
+      }
+      done += batch.length;
+      const pct = Math.round((done / parsedImport.length) * 100);
+      bar.style.width = pct + '%';
+      status.textContent = `Imported ${done} / ${parsedImport.length}...`;
+    }
+
+    status.textContent = `Done! ${done} bans imported.`;
+    bar.style.width = '100%';
+    showToast(`Imported ${done} bans`, 'success');
+    setTimeout(closeImport, 1500);
+    loadBans();
+  }
 
   // ── Password reset/invite token detection ──────────────────────────────────
   // Supabase puts #access_token=...&type=recovery (or invite) in the URL hash
