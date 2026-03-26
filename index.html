@@ -3,502 +3,778 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Global Ban List</title>
-<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<title>Ban List — RBS</title>
+<link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;700&family=Google+Sans+Display:wght@400;500&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
   :root {
-    --bg: #0a0c10;
-    --surface: #111318;
-    --surface2: #1a1d24;
-    --border: #2a2d35;
-    --border2: #3a3d47;
-    --text: #e8eaf0;
-    --muted: #7a7d8a;
-    --accent: #e05252;
-    --accent2: #ff6b6b;
-    --green: #4ade80;
-    --amber: #fbbf24;
-    --mono: 'Space Mono', monospace;
-    --sans: 'DM Sans', sans-serif;
+    --md-sys-color-primary: #B0C4FF;
+    --md-sys-color-on-primary: #00215C;
+    --md-sys-color-primary-container: #0B3391;
+    --md-sys-color-on-primary-container: #DCE1FF;
+    --md-sys-color-error: #FFB4AB;
+    --md-sys-color-error-container: #93000A;
+    --md-sys-color-on-error: #690005;
+    --md-sys-color-surface: #111318;
+    --md-sys-color-surface-variant: #44474F;
+    --md-sys-color-surface1: #1C1E26;
+    --md-sys-color-surface2: #21242D;
+    --md-sys-color-surface3: #272A34;
+    --md-sys-color-on-surface: #E2E2E9;
+    --md-sys-color-on-surface-variant: #C5C6D0;
+    --md-sys-color-outline: #8E9099;
+    --md-sys-color-outline-variant: #44474F;
+    --md-sys-color-background: #111318;
+    --md-sys-color-scrim: rgba(0,0,0,0.6);
+
+    --green: #6DD58C;
+    --amber: #FFBC71;
+    --purple: #D0BCFF;
+
+    --sans: 'Google Sans', sans-serif;
+    --display: 'Google Sans Display', sans-serif;
+    --mono: 'Roboto Mono', monospace;
+
+    --shape-xs: 4px;
+    --shape-sm: 8px;
+    --shape-md: 12px;
+    --shape-lg: 16px;
+    --shape-xl: 28px;
+    --shape-full: 9999px;
+
+    --elevation-1: 0 1px 2px rgba(0,0,0,0.3), 0 1px 3px 1px rgba(0,0,0,0.15);
+    --elevation-2: 0 1px 2px rgba(0,0,0,0.3), 0 2px 6px 2px rgba(0,0,0,0.15);
+    --elevation-3: 0 4px 8px 3px rgba(0,0,0,0.15), 0 1px 3px rgba(0,0,0,0.3);
   }
 
   * { box-sizing: border-box; margin: 0; padding: 0; }
 
   body {
-    background: var(--bg);
-    color: var(--text);
+    background: var(--md-sys-color-background);
+    color: var(--md-sys-color-on-surface);
     font-family: var(--sans);
     min-height: 100vh;
-    font-size: 15px;
+    font-size: 14px;
+    line-height: 1.5;
   }
 
-  /* Subtle grid background */
-  body::before {
-    content: '';
-    position: fixed;
-    inset: 0;
-    background-image:
-      linear-gradient(var(--surface2) 1px, transparent 1px),
-      linear-gradient(90deg, var(--surface2) 1px, transparent 1px);
-    background-size: 40px 40px;
-    opacity: 0.3;
-    z-index: 0;
-    pointer-events: none;
-  }
-
-  .wrap {
-    position: relative;
-    z-index: 1;
-    max-width: 860px;
-    margin: 0 auto;
-    padding: 3rem 1.5rem 5rem;
-  }
-
-  /* Header */
-  header {
+  /* ── Top App Bar ─────────────────────────────────────────────────────────── */
+  .top-bar {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background: var(--md-sys-color-surface1);
+    border-bottom: 1px solid var(--md-sys-color-outline-variant);
     display: flex;
-    align-items: flex-start;
+    align-items: center;
     justify-content: space-between;
-    margin-bottom: 3rem;
+    padding: 0 1.5rem;
+    height: 64px;
     gap: 1rem;
-    flex-wrap: wrap;
   }
 
-  .logo-area h1 {
-    font-family: var(--mono);
-    font-size: 1.4rem;
-    color: var(--accent2);
-    letter-spacing: -0.5px;
+  .top-bar-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
   }
 
-  .logo-area p {
-    color: var(--muted);
-    font-size: 0.85rem;
-    margin-top: 4px;
-    font-weight: 300;
+  .top-bar-icon {
+    width: 40px;
+    height: 40px;
+    background: var(--md-sys-color-primary-container);
+    border-radius: var(--shape-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    flex-shrink: 0;
   }
 
-  .tag {
+  .top-bar h1 {
+    font-family: var(--display);
+    font-size: 1.25rem;
+    font-weight: 500;
+    color: var(--md-sys-color-on-surface);
+    letter-spacing: 0;
+  }
+
+  .top-bar p {
+    font-size: 0.75rem;
+    color: var(--md-sys-color-on-surface-variant);
+    margin-top: 1px;
+  }
+
+  .live-chip {
     display: inline-flex;
     align-items: center;
-    gap: 6px;
-    font-size: 0.75rem;
+    gap: 5px;
+    background: rgba(109, 213, 140, 0.12);
+    border: 1px solid rgba(109, 213, 140, 0.3);
+    border-radius: var(--shape-full);
+    padding: 3px 10px;
+    font-size: 0.7rem;
+    color: var(--green);
     font-family: var(--mono);
-    padding: 4px 10px;
-    border-radius: 4px;
-    border: 1px solid;
-    margin-top: 8px;
+    letter-spacing: 0.3px;
   }
 
-  .tag.live { border-color: var(--green); color: var(--green); }
-  .tag.live::before { content: ''; display: block; width: 6px; height: 6px; border-radius: 50%; background: var(--green); animation: pulse 2s infinite; }
+  .live-chip::before {
+    content: '';
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--green);
+    animation: pulse 2s infinite;
+  }
 
   @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.3; } }
 
-  /* Admin login button / area */
-  #admin-login-btn {
-    background: transparent;
-    border: 1px solid var(--border2);
-    color: var(--muted);
-    font-family: var(--mono);
-    font-size: 0.75rem;
-    padding: 8px 14px;
-    border-radius: 6px;
+  /* ── Filled tonal button ─────────────────────────────────────────────────── */
+  .btn-tonal {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--md-sys-color-surface3);
+    color: var(--md-sys-color-on-surface-variant);
+    border: none;
+    border-radius: var(--shape-full);
+    padding: 8px 18px;
+    font-family: var(--sans);
+    font-size: 0.85rem;
+    font-weight: 500;
     cursor: pointer;
-    transition: all 0.2s;
-    align-self: flex-start;
+    transition: background 0.2s, color 0.2s;
+    white-space: nowrap;
   }
-  #admin-login-btn:hover { border-color: var(--accent); color: var(--accent2); }
+  .btn-tonal:hover { background: var(--md-sys-color-surface-variant); color: var(--md-sys-color-on-surface); }
 
-  /* Stats row */
-  .stats {
-    display: flex;
-    gap: 1rem;
-    margin-bottom: 2rem;
-    flex-wrap: wrap;
+  .btn-tonal.active {
+    background: var(--md-sys-color-primary-container);
+    color: var(--md-sys-color-on-primary-container);
   }
+
+  /* ── Filled button ───────────────────────────────────────────────────────── */
+  .btn-filled {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--md-sys-color-primary);
+    color: var(--md-sys-color-on-primary);
+    border: none;
+    border-radius: var(--shape-full);
+    padding: 10px 24px;
+    font-family: var(--sans);
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: opacity 0.2s, box-shadow 0.2s;
+    letter-spacing: 0.1px;
+  }
+  .btn-filled:hover { box-shadow: var(--elevation-1); opacity: 0.92; }
+  .btn-filled:active { transform: scale(0.98); }
+  .btn-filled:disabled { opacity: 0.38; cursor: not-allowed; }
+
+  /* ── Text button ─────────────────────────────────────────────────────────── */
+  .btn-text {
+    background: transparent;
+    border: none;
+    border-radius: var(--shape-full);
+    color: var(--md-sys-color-primary);
+    font-family: var(--sans);
+    font-size: 0.875rem;
+    font-weight: 500;
+    padding: 8px 12px;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  .btn-text:hover { background: rgba(176,196,255,0.08); }
+
+  /* ── Outlined button ─────────────────────────────────────────────────────── */
+  .btn-outlined {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: transparent;
+    border: 1px solid var(--md-sys-color-outline);
+    border-radius: var(--shape-full);
+    color: var(--md-sys-color-primary);
+    font-family: var(--sans);
+    font-size: 0.875rem;
+    font-weight: 500;
+    padding: 9px 22px;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  .btn-outlined:hover { background: rgba(176,196,255,0.08); }
+
+  /* ── Admin tabs ──────────────────────────────────────────────────────────── */
+  .admin-tab {
+    background: transparent;
+    border: none;
+    border-radius: var(--shape-sm);
+    color: var(--md-sys-color-on-surface-variant);
+    font-family: var(--sans);
+    font-size: 0.82rem;
+    font-weight: 500;
+    padding: 6px 16px;
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s;
+    display: inline-flex;
+    align-items: center;
+  }
+  .admin-tab:hover { background: rgba(255,255,255,0.06); }
+  .admin-tab.active { background: var(--md-sys-color-surface3); color: var(--md-sys-color-on-surface); }
+
+  /* ── Suggestion cards ────────────────────────────────────────────────────── */
+  .suggestion-card {
+    background: var(--md-sys-color-surface2);
+    border: 1px solid var(--md-sys-color-outline-variant);
+    border-radius: var(--shape-lg);
+    padding: 1rem 1.2rem;
+    margin-bottom: 10px;
+  }
+  .suggestion-card-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:6px; flex-wrap:wrap; gap:8px; }
+  .suggestion-card-meta   { display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
+  .suggestion-card-actions { display:flex; gap:8px; }
+  .suggestion-reason    { font-size:0.82rem; color:var(--md-sys-color-on-surface-variant); margin-top:4px; line-height:1.5; }
+  .suggestion-submitter { font-size:0.72rem; color:var(--md-sys-color-outline); margin-top:6px; font-family:var(--mono); }
+
+  /* ── Main layout ─────────────────────────────────────────────────────────── */
+  .wrap {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 1.5rem 1.5rem 4rem;
+  }
+
+  /* ── Stat cards ──────────────────────────────────────────────────────────── */
+  .stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    margin-bottom: 1.5rem;
+  }
+
+  @media (max-width: 480px) { .stats { grid-template-columns: 1fr; } }
 
   .stat-card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 1rem 1.4rem;
-    flex: 1;
-    min-width: 120px;
+    background: var(--md-sys-color-surface1);
+    border-radius: var(--shape-lg);
+    padding: 1.2rem 1.5rem;
+    border: 1px solid var(--md-sys-color-outline-variant);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .stat-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(176,196,255,0.05) 0%, transparent 60%);
+    pointer-events: none;
   }
 
   .stat-card .val {
-    font-family: var(--mono);
-    font-size: 1.6rem;
-    color: var(--accent2);
-    font-weight: 700;
+    font-family: var(--display);
+    font-size: 2rem;
+    font-weight: 400;
+    color: var(--md-sys-color-primary);
+    line-height: 1;
   }
 
   .stat-card .lbl {
     font-size: 0.75rem;
-    color: var(--muted);
-    margin-top: 2px;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
+    color: var(--md-sys-color-on-surface-variant);
+    margin-top: 4px;
+    font-weight: 500;
+    letter-spacing: 0.1px;
   }
 
-  /* Search bar */
+  /* ── Admin card ──────────────────────────────────────────────────────────── */
+  #admin-panel {
+    display: none;
+    background: var(--md-sys-color-surface1);
+    border: 1px solid var(--md-sys-color-primary-container);
+    border-radius: var(--shape-xl);
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .admin-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 1.2rem;
+  }
+
+  .admin-header h2 {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--md-sys-color-on-primary-container);
+    letter-spacing: 0.1px;
+  }
+
+  .admin-chip {
+    background: var(--md-sys-color-primary-container);
+    color: var(--md-sys-color-on-primary-container);
+    font-size: 0.7rem;
+    padding: 2px 8px;
+    border-radius: var(--shape-full);
+    font-weight: 500;
+  }
+
+  .form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr 2fr 1fr;
+    gap: 10px;
+    align-items: end;
+  }
+
+  @media (max-width: 640px) { .form-row { grid-template-columns: 1fr 1fr; } }
+
+  /* ── Material text fields ────────────────────────────────────────────────── */
+  .m3-field {
+    position: relative;
+  }
+
+  .m3-field label {
+    display: block;
+    font-size: 0.72rem;
+    color: var(--md-sys-color-on-surface-variant);
+    margin-bottom: 5px;
+    font-weight: 500;
+    letter-spacing: 0.4px;
+  }
+
+  .m3-field input,
+  .m3-field select,
+  .m3-field textarea {
+    width: 100%;
+    background: var(--md-sys-color-surface2);
+    border: 1px solid var(--md-sys-color-outline-variant);
+    border-radius: var(--shape-sm);
+    color: var(--md-sys-color-on-surface);
+    font-family: var(--sans);
+    font-size: 0.875rem;
+    padding: 9px 12px;
+    outline: none;
+    transition: border-color 0.2s, background 0.2s;
+  }
+
+  .m3-field input:focus,
+  .m3-field select:focus,
+  .m3-field textarea:focus {
+    border-color: var(--md-sys-color-primary);
+    background: var(--md-sys-color-surface3);
+  }
+
+  .m3-field input::placeholder { color: var(--md-sys-color-outline); }
+  .m3-field select option { background: var(--md-sys-color-surface2); }
+
+  .admin-actions {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 1rem;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .admin-actions-left { display: flex; gap: 8px; flex-wrap: wrap; }
+
+  .admin-footer-text {
+    font-size: 0.75rem;
+    color: var(--md-sys-color-on-surface-variant);
+  }
+
+  /* ── Search ──────────────────────────────────────────────────────────────── */
   .search-wrap {
     position: relative;
-    margin-bottom: 1.5rem;
+    margin-bottom: 1rem;
   }
 
   .search-wrap input {
     width: 100%;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    color: var(--text);
-    font-family: var(--mono);
-    font-size: 0.85rem;
-    padding: 10px 14px 10px 40px;
+    background: var(--md-sys-color-surface1);
+    border: 1px solid var(--md-sys-color-outline-variant);
+    border-radius: var(--shape-full);
+    color: var(--md-sys-color-on-surface);
+    font-family: var(--sans);
+    font-size: 0.875rem;
+    padding: 11px 16px 11px 44px;
     outline: none;
-    transition: border-color 0.2s;
+    transition: border-color 0.2s, background 0.2s;
   }
 
-  .search-wrap input:focus { border-color: var(--border2); }
-  .search-wrap input::placeholder { color: var(--muted); }
+  .search-wrap input:focus {
+    border-color: var(--md-sys-color-primary);
+    background: var(--md-sys-color-surface2);
+  }
+
+  .search-wrap input::placeholder { color: var(--md-sys-color-outline); }
 
   .search-icon {
     position: absolute;
-    left: 13px;
+    left: 15px;
     top: 50%;
     transform: translateY(-50%);
-    color: var(--muted);
-    font-size: 14px;
+    color: var(--md-sys-color-on-surface-variant);
+    font-size: 16px;
     pointer-events: none;
   }
 
-  /* Table */
-  .table-wrap {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 10px;
+  /* ── Table card ──────────────────────────────────────────────────────────── */
+  .table-card {
+    background: var(--md-sys-color-surface1);
+    border: 1px solid var(--md-sys-color-outline-variant);
+    border-radius: var(--shape-xl);
     overflow: hidden;
   }
 
   table {
     width: 100%;
     border-collapse: collapse;
-    font-size: 0.85rem;
+    font-size: 0.875rem;
   }
 
   thead tr {
-    background: var(--surface2);
-    border-bottom: 1px solid var(--border);
+    background: var(--md-sys-color-surface2);
+    border-bottom: 1px solid var(--md-sys-color-outline-variant);
   }
 
   th {
-    padding: 10px 14px;
+    padding: 12px 16px;
     text-align: left;
-    font-family: var(--mono);
-    font-size: 0.7rem;
-    color: var(--muted);
+    font-size: 0.72rem;
+    font-weight: 500;
+    color: var(--md-sys-color-on-surface-variant);
+    letter-spacing: 0.5px;
     text-transform: uppercase;
-    letter-spacing: 0.8px;
-    font-weight: 400;
   }
 
   td {
-    padding: 11px 14px;
-    border-bottom: 1px solid var(--border);
+    padding: 12px 16px;
+    border-bottom: 1px solid rgba(68,71,79,0.4);
     vertical-align: middle;
   }
 
   tbody tr:last-child td { border-bottom: none; }
 
-  tbody tr:hover { background: rgba(255,255,255,0.02); }
+  tbody tr { transition: background 0.15s; }
+  tbody tr:hover { background: rgba(176,196,255,0.04); }
 
   .username {
-    font-family: var(--mono);
-    font-size: 0.85rem;
-    color: var(--text);
+    font-weight: 500;
+    color: var(--md-sys-color-on-surface);
   }
 
-  .reason-pill {
-    display: inline-block;
-    padding: 3px 8px;
-    border-radius: 4px;
+  .userid {
+    font-family: var(--mono);
+    font-size: 0.78rem;
+    color: var(--md-sys-color-on-surface-variant);
+  }
+
+  /* Category chips */
+  .cat-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 10px;
+    border-radius: var(--shape-full);
     font-size: 0.72rem;
-    font-family: var(--mono);
-    border: 1px solid;
+    font-weight: 500;
+    letter-spacing: 0.1px;
   }
 
-  .reason-pill.exploit { background: rgba(224,82,82,0.1); border-color: rgba(224,82,82,0.3); color: #ff9090; }
-  .reason-pill.spam { background: rgba(251,191,36,0.1); border-color: rgba(251,191,36,0.3); color: #fbbf24; }
-  .reason-pill.abuse { background: rgba(167,139,250,0.1); border-color: rgba(167,139,250,0.3); color: #c4b5fd; }
-  .reason-pill.cheat { background: rgba(52,211,153,0.1); border-color: rgba(52,211,153,0.3); color: #6ee7b7; }
-  .reason-pill.other { background: rgba(148,163,184,0.1); border-color: rgba(148,163,184,0.3); color: #94a3b8; }
+  .cat-chip.exploit { background: rgba(255,180,171,0.15); color: #FFB4AB; }
+  .cat-chip.spam    { background: rgba(255,188,113,0.15); color: var(--amber); }
+  .cat-chip.abuse   { background: rgba(208,188,255,0.15); color: var(--purple); }
+  .cat-chip.cheat   { background: rgba(109,213,140,0.15); color: var(--green); }
+  .cat-chip.other   { background: rgba(197,198,208,0.1);  color: var(--md-sys-color-on-surface-variant); }
 
-  .date { color: var(--muted); font-family: var(--mono); font-size: 0.75rem; }
+  .ban-chip {
+    display: inline-flex;
+    align-items: center;
+    padding: 4px 10px;
+    border-radius: var(--shape-full);
+    font-size: 0.72rem;
+    font-weight: 500;
+    background: rgba(255,180,171,0.12);
+    color: var(--md-sys-color-error);
+    letter-spacing: 0.1px;
+  }
 
-  .ban-badge {
-    font-size: 0.7rem;
+  .date-text {
+    font-size: 0.78rem;
+    color: var(--md-sys-color-on-surface-variant);
     font-family: var(--mono);
-    padding: 3px 7px;
-    border-radius: 4px;
-    background: rgba(224,82,82,0.12);
-    border: 1px solid rgba(224,82,82,0.25);
-    color: var(--accent2);
+  }
+
+  .reason-text {
+    color: var(--md-sys-color-on-surface-variant);
+    font-size: 0.82rem;
+    max-width: 260px;
   }
 
   .empty-state {
     padding: 3rem;
     text-align: center;
-    color: var(--muted);
-    font-size: 0.85rem;
+    color: var(--md-sys-color-on-surface-variant);
+    font-size: 0.875rem;
   }
 
-  /* Admin panel */
-  #admin-panel {
+  .btn-unban {
     display: none;
-    background: var(--surface);
-    border: 1px solid var(--accent);
-    border-radius: 10px;
-    padding: 1.5rem;
-    margin-bottom: 2rem;
+    align-items: center;
+    gap: 4px;
+    background: transparent;
+    border: 1px solid var(--md-sys-color-outline-variant);
+    border-radius: var(--shape-full);
+    color: var(--md-sys-color-error);
+    font-family: var(--sans);
+    font-size: 0.75rem;
+    font-weight: 500;
+    padding: 5px 12px;
+    cursor: pointer;
+    transition: background 0.2s;
+    white-space: nowrap;
   }
+  .btn-unban:hover { background: rgba(255,180,171,0.08); border-color: var(--md-sys-color-error); }
+  body.admin-mode .btn-unban { display: inline-flex; }
 
-  #admin-panel h2 {
-    font-family: var(--mono);
-    font-size: 0.85rem;
-    color: var(--accent2);
-    margin-bottom: 1.2rem;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-  }
-
-  .form-row {
-    display: grid;
-    grid-template-columns: 1fr 1fr 2fr auto;
-    gap: 8px;
-    align-items: end;
+  /* ── API hint ────────────────────────────────────────────────────────────── */
+  .api-hint {
+    margin-top: 1.5rem;
+    background: var(--md-sys-color-surface1);
+    border: 1px solid var(--md-sys-color-outline-variant);
+    border-radius: var(--shape-lg);
+    padding: 1rem 1.25rem;
+    display: flex;
+    align-items: center;
+    gap: 12px;
     flex-wrap: wrap;
   }
 
-  @media (max-width: 640px) {
-    .form-row { grid-template-columns: 1fr 1fr; }
-  }
-
-  .field label {
-    display: block;
-    font-size: 0.7rem;
-    font-family: var(--mono);
-    color: var(--muted);
-    margin-bottom: 4px;
+  .api-hint-label {
+    font-size: 0.72rem;
+    font-weight: 500;
+    color: var(--md-sys-color-on-surface-variant);
     text-transform: uppercase;
     letter-spacing: 0.5px;
-  }
-
-  .field input, .field select, .field textarea {
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    border-radius: 6px;
-    color: var(--text);
-    font-family: var(--mono);
-    font-size: 0.82rem;
-    padding: 8px 10px;
-    width: 100%;
-    outline: none;
-    transition: border-color 0.2s;
-  }
-
-  .field input:focus, .field select:focus { border-color: var(--accent); }
-  .field select option { background: var(--surface2); }
-
-  .btn-ban {
-    background: var(--accent);
-    border: none;
-    border-radius: 6px;
-    color: white;
-    font-family: var(--mono);
-    font-size: 0.8rem;
-    padding: 9px 16px;
-    cursor: pointer;
-    transition: background 0.2s, transform 0.1s;
     white-space: nowrap;
-    height: fit-content;
-  }
-
-  .btn-ban:hover { background: var(--accent2); }
-  .btn-ban:active { transform: scale(0.97); }
-  .btn-ban:disabled { opacity: 0.4; cursor: not-allowed; }
-
-  .admin-footer {
-    margin-top: 1rem;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    font-size: 0.75rem;
-    color: var(--muted);
-    font-family: var(--mono);
-  }
-
-  .btn-logout {
-    background: transparent;
-    border: 1px solid var(--border);
-    color: var(--muted);
-    font-family: var(--mono);
-    font-size: 0.72rem;
-    padding: 5px 10px;
-    border-radius: 4px;
-    cursor: pointer;
-    transition: all 0.2s;
-  }
-  .btn-logout:hover { border-color: var(--accent); color: var(--accent2); }
-
-  /* Login modal */
-  #login-modal {
-    display: none;
-    position: fixed;
-    inset: 0;
-    background: rgba(0,0,0,0.7);
-    z-index: 100;
-    align-items: center;
-    justify-content: center;
-  }
-  #login-modal.open { display: flex; }
-
-  .modal-box {
-    background: var(--surface);
-    border: 1px solid var(--border2);
-    border-radius: 12px;
-    padding: 2rem;
-    width: 340px;
-    max-width: calc(100vw - 2rem);
-  }
-
-  .modal-box h2 {
-    font-family: var(--mono);
-    font-size: 1rem;
-    margin-bottom: 1.5rem;
-    color: var(--text);
-  }
-
-  .modal-box .field { margin-bottom: 1rem; }
-
-  .btn-primary {
-    width: 100%;
-    background: var(--accent);
-    border: none;
-    border-radius: 6px;
-    color: white;
-    font-family: var(--mono);
-    font-size: 0.85rem;
-    padding: 10px;
-    cursor: pointer;
-    margin-top: 0.5rem;
-    transition: background 0.2s;
-  }
-  .btn-primary:hover { background: var(--accent2); }
-
-  .modal-err {
-    font-size: 0.75rem;
-    color: var(--accent2);
-    font-family: var(--mono);
-    margin-top: 8px;
-    display: none;
-  }
-
-  #modal-close {
-    float: right;
-    background: none;
-    border: none;
-    color: var(--muted);
-    cursor: pointer;
-    font-size: 1.2rem;
-    line-height: 1;
-    margin-top: -4px;
-  }
-
-  .toast {
-    position: fixed;
-    bottom: 2rem;
-    right: 2rem;
-    background: var(--surface2);
-    border: 1px solid var(--border2);
-    border-radius: 8px;
-    padding: 10px 16px;
-    font-family: var(--mono);
-    font-size: 0.78rem;
-    color: var(--text);
-    z-index: 200;
-    opacity: 0;
-    transform: translateY(10px);
-    transition: all 0.3s;
-  }
-  .toast.show { opacity: 1; transform: translateY(0); }
-  .toast.success { border-color: var(--green); color: var(--green); }
-  .toast.error { border-color: var(--accent); color: var(--accent2); }
-
-  /* Unban button */
-  .btn-unban {
-    background: transparent;
-    border: 1px solid var(--border);
-    color: var(--muted);
-    font-family: var(--mono);
-    font-size: 0.7rem;
-    padding: 4px 8px;
-    border-radius: 4px;
-    cursor: pointer;
-    transition: all 0.2s;
-    display: none;
-  }
-  .btn-unban:hover { border-color: var(--accent); color: var(--accent2); }
-  body.admin-mode .btn-unban { display: inline-block; }
-
-  .api-hint {
-    margin-top: 2rem;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 1rem 1.25rem;
-  }
-
-  .api-hint p {
-    font-size: 0.72rem;
-    color: var(--muted);
-    font-family: var(--mono);
-    margin-bottom: 6px;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
   }
 
   .api-hint code {
     font-family: var(--mono);
     font-size: 0.78rem;
     color: var(--green);
-    display: block;
     word-break: break-all;
+    flex: 1;
   }
+
+  /* ── Modals ──────────────────────────────────────────────────────────────── */
+  .modal-scrim {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: var(--md-sys-color-scrim);
+    z-index: 100;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+  }
+  .modal-scrim.open { display: flex; }
+
+  .modal-surface {
+    background: var(--md-sys-color-surface3);
+    border-radius: var(--shape-xl);
+    padding: 1.5rem;
+    width: 100%;
+    max-width: 400px;
+    box-shadow: var(--elevation-3);
+    animation: modal-in 0.2s ease;
+  }
+
+  .modal-surface.wide { max-width: 540px; }
+
+  @keyframes modal-in {
+    from { opacity: 0; transform: scale(0.96) translateY(8px); }
+    to   { opacity: 1; transform: scale(1) translateY(0); }
+  }
+
+  .modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1.2rem;
+  }
+
+  .modal-header h2 {
+    font-family: var(--display);
+    font-size: 1.1rem;
+    font-weight: 500;
+    color: var(--md-sys-color-on-surface);
+  }
+
+  .modal-close {
+    background: none;
+    border: none;
+    color: var(--md-sys-color-on-surface-variant);
+    cursor: pointer;
+    font-size: 1.2rem;
+    width: 36px;
+    height: 36px;
+    border-radius: var(--shape-full);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s;
+  }
+  .modal-close:hover { background: rgba(255,255,255,0.08); }
+
+  .modal-body .m3-field { margin-bottom: 1rem; }
+
+  .modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    margin-top: 1.2rem;
+  }
+
+  .modal-err {
+    font-size: 0.78rem;
+    color: var(--md-sys-color-error);
+    margin-top: -4px;
+    margin-bottom: 8px;
+    display: none;
+  }
+
+  /* ── Import modal extras ─────────────────────────────────────────────────── */
+  .fmt-toggle {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 1rem;
+  }
+
+  .fmt-btn {
+    flex: 1;
+    padding: 8px;
+    border-radius: var(--shape-md);
+    border: 1px solid var(--md-sys-color-outline-variant);
+    background: transparent;
+    color: var(--md-sys-color-on-surface-variant);
+    font-family: var(--sans);
+    font-size: 0.82rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-align: center;
+  }
+  .fmt-btn.active {
+    background: var(--md-sys-color-primary-container);
+    border-color: var(--md-sys-color-primary-container);
+    color: var(--md-sys-color-on-primary-container);
+  }
+
+  .preview-box {
+    background: var(--md-sys-color-surface2);
+    border: 1px solid var(--md-sys-color-outline-variant);
+    border-radius: var(--shape-md);
+    padding: 8px 12px;
+    max-height: 160px;
+    overflow-y: auto;
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    color: var(--md-sys-color-on-surface);
+    margin-top: 8px;
+  }
+
+  .preview-label {
+    font-size: 0.75rem;
+    color: var(--md-sys-color-on-surface-variant);
+    margin-bottom: 4px;
+  }
+
+  .progress-wrap {
+    margin-top: 1rem;
+    display: none;
+  }
+
+  .progress-track {
+    background: var(--md-sys-color-surface-variant);
+    border-radius: var(--shape-full);
+    height: 4px;
+    overflow: hidden;
+    margin-bottom: 6px;
+  }
+
+  .progress-bar {
+    background: var(--md-sys-color-primary);
+    height: 100%;
+    width: 0%;
+    transition: width 0.3s;
+    border-radius: var(--shape-full);
+  }
+
+  .progress-text {
+    font-size: 0.75rem;
+    color: var(--md-sys-color-on-surface-variant);
+    font-family: var(--mono);
+  }
+
+  /* ── Snackbar ────────────────────────────────────────────────────────────── */
+  .snackbar {
+    position: fixed;
+    bottom: 1.5rem;
+    left: 50%;
+    transform: translateX(-50%) translateY(80px);
+    background: #E2E2E9;
+    color: #1B1B1F;
+    border-radius: var(--shape-sm);
+    padding: 12px 20px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    z-index: 300;
+    opacity: 0;
+    transition: transform 0.3s cubic-bezier(0.2,0,0,1), opacity 0.3s;
+    white-space: nowrap;
+    box-shadow: var(--elevation-3);
+    min-width: 240px;
+    text-align: center;
+  }
+  .snackbar.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+  .snackbar.error { background: var(--md-sys-color-error-container); color: var(--md-sys-color-error); }
+  .snackbar.success { background: #1A3826; color: var(--green); }
 </style>
 </head>
 <body>
 
-<div class="wrap">
-  <header>
-    <div class="logo-area">
-      <h1>// global_ban_list</h1>
-      <p>Managed by your game's moderation team</p>
-      <div class="tag live">LIVE</div>
+<!-- Top App Bar -->
+<div class="top-bar">
+  <div class="top-bar-left">
+    <div class="top-bar-icon">🛡️</div>
+    <div>
+      <h1>Roblox Ban System</h1>
+      <p>Global moderation list</p>
     </div>
-    <button id="admin-login-btn" onclick="openLogin()">[ admin login ]</button>
-  </header>
+    <div class="live-chip">Live</div>
+  </div>
+  <div style="display:flex;align-items:center;gap:8px;">
+    <button class="btn-outlined" onclick="openSuggest()" style="padding:7px 16px;font-size:0.82rem;">Suggest ban</button>
+    <button class="btn-tonal" id="admin-login-btn" onclick="openLogin()">Admin</button>
+  </div>
+</div>
+
+<div class="wrap">
 
   <!-- Stats -->
-  <div class="stats">
+  <div class="stats" style="margin-top:1.5rem;">
     <div class="stat-card">
       <div class="val" id="stat-total">—</div>
-      <div class="lbl">Total Bans</div>
+      <div class="lbl">Total bans</div>
     </div>
     <div class="stat-card">
       <div class="val" id="stat-recent">—</div>
-      <div class="lbl">Last 7 Days</div>
+      <div class="lbl">Last 7 days</div>
     </div>
     <div class="stat-card">
       <div class="val" id="stat-exploiters">—</div>
@@ -506,25 +782,209 @@
     </div>
   </div>
 
-  <!-- Admin panel (hidden until logged in) -->
+  <!-- Admin panel -->
   <div id="admin-panel">
-    <h2>// add ban</h2>
-    <div class="form-row">
-      <div class="field">
-        <label>Username</label>
-        <input type="text" id="f-username" placeholder="Roblox username" />
+    <!-- Tab bar -->
+    <div style="display:flex;gap:4px;margin-bottom:1.2rem;background:var(--md-sys-color-surface2);border-radius:var(--shape-md);padding:4px;width:fit-content;">
+      <button class="admin-tab active" id="tab-bans" onclick="switchTab('bans')">Bans</button>
+      <button class="admin-tab" id="tab-suggestions" onclick="switchTab('suggestions')">
+        Suggestions
+        <span id="suggestion-badge" style="display:none;background:var(--md-sys-color-error);color:var(--md-sys-color-on-error);font-size:0.65rem;padding:1px 6px;border-radius:var(--shape-full);margin-left:4px;font-weight:700;">0</span>
+      </button>
+    </div>
+
+    <!-- Bans tab -->
+    <div id="tab-content-bans">
+      <div class="admin-header">
+        <h2>Add ban</h2>
+        <span class="admin-chip">Admin</span>
       </div>
-      <div class="field">
-        <label>User ID</label>
-        <input type="text" id="f-userid" placeholder="12345678" />
+      <div class="form-row">
+        <div class="m3-field">
+          <label>Username</label>
+          <input type="text" id="f-username" placeholder="Roblox username" />
+        </div>
+        <div class="m3-field">
+          <label>User ID</label>
+          <input type="text" id="f-userid" placeholder="12345678" />
+        </div>
+        <div class="m3-field">
+          <label>Reason</label>
+          <input type="text" id="f-reason" placeholder="Brief description..." />
+        </div>
+        <div class="m3-field">
+          <label>Category</label>
+          <select id="f-category">
+            <option value="exploit">Exploit</option>
+            <option value="cheat">Cheat</option>
+            <option value="spam">Spam</option>
+            <option value="abuse">Abuse</option>
+            <option value="other">Other</option>
+          </select>
+        </div>
       </div>
-      <div class="field">
-        <label>Reason</label>
-        <input type="text" id="f-reason" placeholder="Brief description..." />
+      <div class="admin-actions">
+        <div class="admin-actions-left">
+          <button class="btn-filled" onclick="addBan()">Add ban</button>
+          <button class="btn-outlined" onclick="openImport()">Bulk import</button>
+        </div>
+        <div style="display:flex;align-items:center;gap:12px;">
+          <span class="admin-footer-text" id="admin-user-label"></span>
+          <button class="btn-text" onclick="logout()">Sign out</button>
+        </div>
       </div>
-      <div class="field">
+    </div>
+
+    <!-- Suggestions tab -->
+    <div id="tab-content-suggestions" style="display:none;">
+      <div class="admin-header">
+        <h2>Pending suggestions</h2>
+        <span class="admin-chip">Admin</span>
+      </div>
+      <div id="suggestions-list">
+        <div style="color:var(--md-sys-color-on-surface-variant);font-size:0.875rem;padding:1rem 0;">Loading suggestions...</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Search -->
+  <div class="search-wrap">
+    <span class="search-icon">🔍</span>
+    <input type="text" id="search" placeholder="Search username or user ID..." oninput="filterBans()" />
+  </div>
+
+  <!-- Table -->
+  <div class="table-card">
+    <table>
+      <thead>
+        <tr>
+          <th>Username</th>
+          <th>User ID</th>
+          <th>Category</th>
+          <th>Reason</th>
+          <th>Date</th>
+          <th>Status</th>
+          <th id="action-col" style="display:none;"></th>
+        </tr>
+      </thead>
+      <tbody id="ban-tbody">
+        <tr><td colspan="7" class="empty-state">Loading...</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- API hint -->
+  <div class="api-hint">
+    <span class="api-hint-label">GET endpoint</span>
+    <code id="api-url">https://rbs.unforestudios.com/list</code>
+  </div>
+
+</div>
+
+<!-- Login modal -->
+<div class="modal-scrim" id="login-modal">
+  <div class="modal-surface">
+    <div class="modal-header">
+      <h2>Admin sign in</h2>
+      <button class="modal-close" onclick="closeLogin()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="m3-field">
+        <label>Email</label>
+        <input type="email" id="login-email" placeholder="admin@example.com" />
+      </div>
+      <div class="m3-field">
+        <label>Password</label>
+        <input type="password" id="login-password" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()" />
+      </div>
+      <p class="modal-err" id="login-err">Invalid email or password.</p>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-text" onclick="closeLogin()">Cancel</button>
+      <button class="btn-filled" onclick="doLogin()">Sign in</button>
+    </div>
+  </div>
+</div>
+
+<!-- Bulk import modal -->
+<div class="modal-scrim" id="import-modal">
+  <div class="modal-surface wide">
+    <div class="modal-header">
+      <h2>Bulk import</h2>
+      <button class="modal-close" onclick="closeImport()">✕</button>
+    </div>
+    <div class="modal-body">
+      <p style="font-size:0.8rem;color:var(--md-sys-color-on-surface-variant);margin-bottom:1rem;">Accepts EEI raw format or a JSON array.</p>
+      <div class="fmt-toggle">
+        <button class="fmt-btn active" id="fmt-raw" onclick="setFmt('raw')">EEI Raw Format</button>
+        <button class="fmt-btn" id="fmt-json" onclick="setFmt('json')">JSON Array</button>
+      </div>
+      <div class="m3-field">
+        <label id="import-label">Paste raw ban text</label>
+        <textarea id="import-data" rows="7" placeholder="USERID: 123 MESSAGE: Exploiting,..."></textarea>
+      </div>
+      <div id="import-preview" style="display:none;">
+        <p class="preview-label" id="preview-label"></p>
+        <div class="preview-box" id="preview-list"></div>
+      </div>
+      <p class="modal-err" id="import-err">Parse error.</p>
+      <div class="progress-wrap" id="import-progress">
+        <div class="progress-track"><div class="progress-bar" id="import-bar"></div></div>
+        <span class="progress-text" id="import-status">Importing...</span>
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-text" onclick="closeImport()">Cancel</button>
+      <button class="btn-outlined" onclick="previewImport()">Preview</button>
+      <button class="btn-filled" id="btn-confirm-import" style="display:none;" onclick="confirmImport()">Import</button>
+    </div>
+  </div>
+</div>
+
+<!-- Password reset modal -->
+<div class="modal-scrim" id="reset-modal">
+  <div class="modal-surface">
+    <div class="modal-header">
+      <h2 id="reset-title">Set your password</h2>
+    </div>
+    <div class="modal-body">
+      <p style="font-size:0.82rem;color:var(--md-sys-color-on-surface-variant);margin-bottom:1rem;" id="reset-subtitle">Choose a password for your admin account.</p>
+      <div class="m3-field">
+        <label>New password</label>
+        <input type="password" id="reset-pw" placeholder="••••••••" />
+      </div>
+      <div class="m3-field">
+        <label>Confirm password</label>
+        <input type="password" id="reset-pw2" placeholder="••••••••" />
+      </div>
+      <p class="modal-err" id="reset-err">Passwords do not match.</p>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-filled" onclick="doSetPassword()">Set password</button>
+    </div>
+  </div>
+</div>
+
+<!-- Suggest ban modal -->
+<div class="modal-scrim" id="suggest-modal">
+  <div class="modal-surface">
+    <div class="modal-header">
+      <h2>Suggest a ban</h2>
+      <button class="modal-close" onclick="closeSuggest()">✕</button>
+    </div>
+    <div class="modal-body">
+      <p style="font-size:0.82rem;color:var(--md-sys-color-on-surface-variant);margin-bottom:1rem;">Your suggestion will be reviewed by an admin before any action is taken.</p>
+      <div class="m3-field">
+        <label>Roblox User ID</label>
+        <input type="text" id="s-userid" placeholder="12345678" />
+      </div>
+      <div class="m3-field">
+        <label>Username (optional)</label>
+        <input type="text" id="s-username" placeholder="Roblox username" />
+      </div>
+      <div class="m3-field">
         <label>Category</label>
-        <select id="f-category">
+        <select id="s-category">
           <option value="exploit">Exploit</option>
           <option value="cheat">Cheat</option>
           <option value="spam">Spam</option>
@@ -532,148 +992,43 @@
           <option value="other">Other</option>
         </select>
       </div>
-    </div>
-    <div style="margin-top: 10px; display:flex; gap:8px; flex-wrap:wrap;">
-      <button class="btn-ban" onclick="addBan()">+ Add Ban</button>
-      <button class="btn-ban" style="background:transparent; border:1px solid var(--border2); color:var(--muted);" onmouseover="this.style.borderColor='var(--accent)';this.style.color='var(--accent2)'" onmouseout="this.style.borderColor='var(--border2)';this.style.color='var(--muted)'" onclick="openImport()">⬆ Bulk Import</button>
-    </div>
-    <div class="admin-footer">
-      <span id="admin-user-label">logged in as: —</span>
-      <button class="btn-logout" onclick="logout()">logout</button>
-    </div>
-  </div>
-
-  <!-- Search -->
-  <div class="search-wrap">
-    <span class="search-icon">⌕</span>
-    <input type="text" id="search" placeholder="search by user id..." oninput="filterBans()" />
-  </div>
-
-  <!-- Ban table -->
-  <div class="table-wrap">
-    <table>
-      <thead>
-        <tr>
-          <th>User ID</th>
-          <th>Category</th>
-          <th>Reason</th>
-          <th id="action-col" style="display:none;">Action</th>
-        </tr>
-      </thead>
-      <tbody id="ban-tbody">
-        <tr><td colspan="4" class="empty-state">Loading ban list...</td></tr>
-      </tbody>
-    </table>
-  </div>
-
-  <!-- API hint -->
-  <div class="api-hint">
-    <p>Roblox GET endpoint</p>
-    <code id="api-url">https://YOUR_PROJECT.supabase.co/rest/v1/bans?select=*&apikey=YOUR_ANON_KEY</code>
-  </div>
-</div>
-
-<!-- Login modal -->
-<div id="login-modal">
-  <div class="modal-box">
-    <h2>Admin Login <button id="modal-close" onclick="closeLogin()">×</button></h2>
-    <div class="field">
-      <label>Email</label>
-      <input type="email" id="login-email" placeholder="admin@example.com" />
-    </div>
-    <div class="field">
-      <label>Password</label>
-      <input type="password" id="login-password" placeholder="••••••••" onkeydown="if(e.key==='Enter')doLogin()" />
-    </div>
-    <p class="modal-err" id="login-err">Invalid credentials.</p>
-    <button class="btn-primary" onclick="doLogin()">Sign In</button>
-  </div>
-</div>
-
-<!-- Toast -->
-<div class="toast" id="toast"></div>
-
-<!-- Bulk import modal -->
-<div id="import-modal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.8); z-index:200; align-items:center; justify-content:center;">
-  <div class="modal-box" style="width:520px; max-width:calc(100vw - 2rem);">
-    <h2>Bulk Import <button id="import-close" style="float:right;background:none;border:none;color:var(--muted);cursor:pointer;font-size:1.2rem;line-height:1;margin-top:-4px;" onclick="closeImport()">×</button></h2>
-    <p style="font-size:0.75rem; color:var(--muted); font-family:var(--mono); margin-bottom:1rem;">Accepts the <code style="color:var(--green);">USERID: 123 MESSAGE: reason</code> format, or a JSON array.</p>
-
-    <div style="display:flex; gap:8px; margin-bottom:10px;">
-      <button id="fmt-raw" class="btn-ban" style="font-size:0.72rem; padding:5px 12px;" onclick="setFmt('raw')">EEI Raw Format</button>
-      <button id="fmt-json" class="btn-ban" style="font-size:0.72rem; padding:5px 12px; background:transparent; border:1px solid var(--border2); color:var(--muted);" onclick="setFmt('json')">JSON Array</button>
-    </div>
-
-    <div class="field">
-      <label id="import-label">Paste raw ban text</label>
-      <textarea id="import-data" rows="8" style="background:var(--surface2);border:1px solid var(--border);border-radius:6px;color:var(--text);font-family:var(--mono);font-size:0.75rem;padding:8px 10px;width:100%;outline:none;resize:vertical;" placeholder="USERID: 123 MESSAGE: Exploiting,USERID: 456 MESSAGE: Spam..."></textarea>
-    </div>
-
-    <div id="import-preview" style="display:none; margin-bottom:10px;">
-      <p style="font-size:0.72rem; font-family:var(--mono); color:var(--muted); margin-bottom:6px;" id="preview-label"></p>
-      <div style="background:var(--surface2); border:1px solid var(--border); border-radius:6px; padding:8px 10px; max-height:140px; overflow-y:auto; font-family:var(--mono); font-size:0.72rem; color:var(--text);" id="preview-list"></div>
-    </div>
-
-    <p class="modal-err" id="import-err">Parse error.</p>
-
-    <div style="display:flex; gap:8px; margin-top:4px;">
-      <button class="btn-primary" style="flex:0 0 auto; width:auto; padding:10px 20px;" onclick="previewImport()">Preview</button>
-      <button class="btn-primary" id="btn-confirm-import" style="flex:1; display:none;" onclick="confirmImport()">Import All</button>
-    </div>
-
-    <div id="import-progress" style="display:none; margin-top:10px; font-family:var(--mono); font-size:0.75rem; color:var(--muted);">
-      <div style="background:var(--border); border-radius:4px; height:6px; overflow:hidden; margin-bottom:6px;">
-        <div id="import-bar" style="background:var(--accent2); height:100%; width:0%; transition:width 0.3s;"></div>
+      <div class="m3-field">
+        <label>Reason</label>
+        <textarea id="s-reason" rows="3" placeholder="Describe what this user did..."></textarea>
       </div>
-      <span id="import-status">Importing...</span>
+      <div class="m3-field">
+        <label>Your name / Discord (optional)</label>
+        <input type="text" id="s-submitter" placeholder="e.g. yourname#1234" />
+      </div>
+      <p class="modal-err" id="suggest-err">Please fill in the required fields.</p>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-text" onclick="closeSuggest()">Cancel</button>
+      <button class="btn-filled" onclick="submitSuggestion()">Submit</button>
     </div>
   </div>
 </div>
 
-<!-- Password set/reset modal -->
-<div id="reset-modal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.8); z-index:200; align-items:center; justify-content:center;">
-  <div class="modal-box">
-    <h2 id="reset-title">Set your password</h2>
-    <p style="font-size:0.78rem; color:var(--muted); font-family:var(--mono); margin-bottom:1.2rem;" id="reset-subtitle">Choose a password for your admin account.</p>
-    <div class="field">
-      <label>New Password</label>
-      <input type="password" id="reset-pw" placeholder="••••••••" />
-    </div>
-    <div class="field">
-      <label>Confirm Password</label>
-      <input type="password" id="reset-pw2" placeholder="••••••••" />
-    </div>
-    <p class="modal-err" id="reset-err">Passwords do not match.</p>
-    <button class="btn-primary" onclick="doSetPassword()">Set Password</button>
-  </div>
-</div>
+<!-- Snackbar -->
+<div class="snackbar" id="snackbar"></div>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-  // ─── CONFIG — replace these ────────────────────────────────────────────────
-  const SUPABASE_URL  = 'https://frlgciyhchwiizebciid.supabase.co';
-  const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZybGdjaXloY2h3aWl6ZWJjaWlkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQwMDIxNDAsImV4cCI6MjA4OTU3ODE0MH0.it6u7DuOfljZUCH-1xwr-7UW5ariaJ9fLK2j7a_td1I';
-  // ──────────────────────────────────────────────────────────────────────────
-
-  const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
-
-  document.getElementById('api-url').textContent =
-    `${SUPABASE_URL}/rest/v1/bans?select=*&apikey=${SUPABASE_ANON}`;
-
-  let allBans = [];
-  let isAdmin = false;
+  let allBans    = [];
+  let isAdmin    = false;
+  let authToken  = sessionStorage.getItem('rbs_token') || null;
+  let adminEmail = sessionStorage.getItem('rbs_email') || null;
 
   // ── Load bans ──────────────────────────────────────────────────────────────
   async function loadBans() {
-    const { data, error } = await sb.from('bans').select('*').order('banned_at', { ascending: false });
-    if (error) { showToast('Failed to load bans', 'error'); return; }
-    allBans = data || [];
+    const res = await fetch('/list');
+    if (!res.ok) { showToast('Failed to load bans', 'error'); return; }
+    allBans = await res.json();
     updateStats();
     renderTable(allBans);
   }
 
   function updateStats() {
-    const now = Date.now();
+    const now  = Date.now();
     const week = 7 * 24 * 60 * 60 * 1000;
     document.getElementById('stat-total').textContent = allBans.length;
     document.getElementById('stat-recent').textContent =
@@ -685,15 +1040,18 @@
   function renderTable(bans) {
     const tbody = document.getElementById('ban-tbody');
     if (!bans.length) {
-      tbody.innerHTML = '<tr><td colspan="4" class="empty-state">No bans found.</td></tr>';
+      tbody.innerHTML = '<tr><td colspan="7" class="empty-state">No bans found.</td></tr>';
       return;
     }
     tbody.innerHTML = bans.map(b => `
       <tr data-id="${b.id}">
-        <td><span class="date">${esc(b.user_id || '—')}</span></td>
-        <td><span class="reason-pill ${b.category || 'other'}">${b.category || 'other'}</span></td>
-        <td style="color:var(--muted); max-width:240px; word-break:break-word;">${esc(b.reason || '—')}</td>
-        <td><button class="btn-unban" onclick="removeBan('${b.id}')">Unban</button></td>
+        <td><span class="username">${esc(b.username || '—')}</span></td>
+        <td><span class="userid">${esc(b.user_id || '—')}</span></td>
+        <td><span class="cat-chip ${b.category || 'other'}">${b.category || 'other'}</span></td>
+        <td><span class="reason-text">${esc(b.reason || '—')}</span></td>
+        <td><span class="date-text">${fmtDate(b.banned_at)}</span></td>
+        <td><span class="ban-chip">Banned</span></td>
+        <td><button class="btn-unban" onclick="removeBan('${b.id}')">Remove</button></td>
       </tr>
     `).join('');
   }
@@ -701,8 +1059,8 @@
   function filterBans() {
     const q = document.getElementById('search').value.toLowerCase().trim();
     if (!q) { renderTable(allBans); return; }
-    // Search only by user id now (username removed from list)
     renderTable(allBans.filter(b =>
+      (b.username || '').toLowerCase().includes(q) ||
       (b.user_id  || '').toLowerCase().includes(q)
     ));
   }
@@ -713,13 +1071,15 @@
     const user_id  = document.getElementById('f-userid').value.trim();
     const reason   = document.getElementById('f-reason').value.trim();
     const category = document.getElementById('f-category').value;
-    if (!username) { showToast('Username required', 'error'); return; }
+    if (!username && !user_id) { showToast('Username or User ID required', 'error'); return; }
 
-    const { error } = await sb.from('bans').insert([{
-      username, user_id, reason, category, banned_at: new Date().toISOString()
-    }]);
+    const res = await fetch('/api/ban', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${authToken}` },
+      body: JSON.stringify({ username, user_id, reason, category })
+    });
 
-    if (error) { showToast('Insert failed: ' + error.message, 'error'); return; }
+    if (!res.ok) { const e = await res.json(); showToast('Failed: ' + e.error, 'error'); return; }
     showToast('Ban added', 'success');
     document.getElementById('f-username').value = '';
     document.getElementById('f-userid').value   = '';
@@ -728,8 +1088,12 @@
   }
 
   async function removeBan(id) {
-    const { error } = await sb.from('bans').delete().eq('id', id);
-    if (error) { showToast('Failed to remove ban', 'error'); return; }
+    const res = await fetch('/api/unban', {
+      method: 'DELETE',
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${authToken}` },
+      body: JSON.stringify({ id })
+    });
+    if (!res.ok) { const e = await res.json(); showToast('Failed: ' + e.error, 'error'); return; }
     showToast('Ban removed', 'success');
     loadBans();
   }
@@ -741,47 +1105,55 @@
   async function doLogin() {
     const email    = document.getElementById('login-email').value;
     const password = document.getElementById('login-password').value;
-    const { data, error } = await sb.auth.signInWithPassword({ email, password });
-    if (error) {
+    const res = await fetch('/api/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password })
+    });
+    if (!res.ok) {
       document.getElementById('login-err').style.display = 'block';
       return;
     }
+    const data = await res.json();
+    authToken  = data.access_token;
+    adminEmail = data.email;
+    sessionStorage.setItem('rbs_token', authToken);
+    sessionStorage.setItem('rbs_email', adminEmail);
     closeLogin();
-    onAdminLogin(data.user);
+    onAdminLogin(adminEmail);
   }
 
-  function onAdminLogin(user) {
+  function onAdminLogin(email) {
     isAdmin = true;
     document.body.classList.add('admin-mode');
     document.getElementById('admin-panel').style.display = 'block';
-    document.getElementById('admin-user-label').textContent = 'logged in as: ' + user.email;
-    document.getElementById('admin-login-btn').textContent = '[ ✓ admin ]';
+    document.getElementById('admin-user-label').textContent = email;
+    document.getElementById('admin-login-btn').textContent = '✓ Admin';
+    document.getElementById('admin-login-btn').classList.add('active');
     document.getElementById('action-col').style.display = '';
-    // show action column in thead
-    document.querySelectorAll('td:last-child').forEach(td => td.style.display = '');
   }
 
-  async function logout() {
-    await sb.auth.signOut();
+  function logout() {
+    authToken = null; adminEmail = null;
+    sessionStorage.removeItem('rbs_token');
+    sessionStorage.removeItem('rbs_email');
     isAdmin = false;
     document.body.classList.remove('admin-mode');
     document.getElementById('admin-panel').style.display = 'none';
-    document.getElementById('admin-login-btn').textContent = '[ admin login ]';
+    document.getElementById('admin-login-btn').textContent = 'Admin';
+    document.getElementById('admin-login-btn').classList.remove('active');
     document.getElementById('action-col').style.display = 'none';
-    showToast('Logged out', 'success');
+    showToast('Signed out', 'success');
   }
 
-  // Check for existing session on load
-  sb.auth.getSession().then(({ data: { session } }) => {
-    if (session) onAdminLogin(session.user);
-  });
+  if (authToken && adminEmail) onAdminLogin(adminEmail);
 
-  // ── Bulk Import ────────────────────────────────────────────────────────────
+  // ── Bulk import ────────────────────────────────────────────────────────────
   let importFmt = 'raw';
   let parsedImport = [];
 
   function openImport() {
-    document.getElementById('import-modal').style.display = 'flex';
+    document.getElementById('import-modal').classList.add('open');
     document.getElementById('import-preview').style.display = 'none';
     document.getElementById('btn-confirm-import').style.display = 'none';
     document.getElementById('import-err').style.display = 'none';
@@ -789,46 +1161,32 @@
     document.getElementById('import-data').value = '';
   }
 
-  function closeImport() {
-    document.getElementById('import-modal').style.display = 'none';
-  }
+  function closeImport() { document.getElementById('import-modal').classList.remove('open'); }
 
   function setFmt(fmt) {
     importFmt = fmt;
-    const rawBtn  = document.getElementById('fmt-raw');
-    const jsonBtn = document.getElementById('fmt-json');
-    const lbl     = document.getElementById('import-label');
-    const ta      = document.getElementById('import-data');
-    if (fmt === 'raw') {
-      rawBtn.style.background  = 'var(--accent)';   rawBtn.style.color  = 'white'; rawBtn.style.border = 'none';
-      jsonBtn.style.background = 'transparent';     jsonBtn.style.color = 'var(--muted)'; jsonBtn.style.border = '1px solid var(--border2)';
-      lbl.textContent = 'Paste raw ban text';
-      ta.placeholder  = 'USERID: 123 MESSAGE: Exploiting,USERID: 456 MESSAGE: Spam...';
-    } else {
-      jsonBtn.style.background = 'var(--accent)';   jsonBtn.style.color  = 'white'; jsonBtn.style.border = 'none';
-      rawBtn.style.background  = 'transparent';     rawBtn.style.color   = 'var(--muted)'; rawBtn.style.border = '1px solid var(--border2)';
-      lbl.textContent = 'Paste JSON array';
-      ta.placeholder  = '[{"user_id":"123","reason":"Exploiting"},...]';
-    }
+    document.getElementById('fmt-raw').classList.toggle('active', fmt === 'raw');
+    document.getElementById('fmt-json').classList.toggle('active', fmt === 'json');
+    document.getElementById('import-label').textContent = fmt === 'raw' ? 'Paste raw ban text' : 'Paste JSON array';
+    document.getElementById('import-data').placeholder = fmt === 'raw'
+      ? 'USERID: 123 MESSAGE: Exploiting,...'
+      : '[{"user_id":"123","reason":"Exploiting"},...]';
     document.getElementById('import-preview').style.display = 'none';
     document.getElementById('btn-confirm-import').style.display = 'none';
     document.getElementById('import-err').style.display = 'none';
   }
 
   function parseRaw(text) {
-    // Split on commas that precede USERID: (handles commas in messages)
     const entries = text.split(/,\s*(?=USERID[\s:])/i);
     const results = [];
     for (const entry of entries) {
       const trimmed = entry.trim();
       if (!trimmed) continue;
-      // Extract USERID (handles missing colon edge cases in source data)
       const idMatch  = trimmed.match(/USERID[:\s]+(\d+)/i);
       const msgMatch = trimmed.match(/MESSAGE[:\s]+(.*)/i);
       if (!idMatch) continue;
       const user_id = idMatch[1].trim();
       const reason  = msgMatch ? msgMatch[1].trim() : '';
-      // Auto-categorise based on keywords
       const r = reason.toLowerCase();
       let category = 'other';
       if (r.includes('exploit') || r.includes('hack') || r.includes('cheat')) category = 'exploit';
@@ -843,12 +1201,12 @@
   function parseJSON(text) {
     const arr = JSON.parse(text);
     if (!Array.isArray(arr)) throw new Error('Expected a JSON array');
-    return arr.map(entry => ({
-      user_id:    String(entry.user_id   || entry.userId   || entry.id  || ''),
-      username:   String(entry.username  || entry.name     || ''),
-      reason:     String(entry.reason    || entry.message  || entry.msg || ''),
-      category:   String(entry.category  || 'other'),
-      banned_at:  entry.banned_at || new Date().toISOString()
+    return arr.map(e => ({
+      user_id:   String(e.user_id  || e.userId  || e.id  || ''),
+      username:  String(e.username || e.name    || ''),
+      reason:    String(e.reason   || e.message || e.msg || ''),
+      category:  String(e.category || 'other'),
+      banned_at: e.banned_at || new Date().toISOString()
     }));
   }
 
@@ -857,41 +1215,32 @@
     err.style.display = 'none';
     const text = document.getElementById('import-data').value.trim();
     if (!text) { err.textContent = 'Paste some data first.'; err.style.display = 'block'; return; }
-
     try {
       parsedImport = importFmt === 'raw' ? parseRaw(text) : parseJSON(text);
     } catch(e) {
-      err.textContent = 'Parse error: ' + e.message;
-      err.style.display = 'block';
-      return;
+      err.textContent = 'Parse error: ' + e.message; err.style.display = 'block'; return;
     }
+    if (!parsedImport.length) { err.textContent = 'No valid entries found.'; err.style.display = 'block'; return; }
 
-    if (!parsedImport.length) {
-      err.textContent = 'No valid entries found.';
-      err.style.display = 'block';
-      return;
-    }
-
-    // Deduplicate against existing bans
     const existingIds = new Set(allBans.map(b => b.user_id));
     const newOnly = parsedImport.filter(b => !existingIds.has(b.user_id));
     const dupes   = parsedImport.length - newOnly.length;
     parsedImport  = newOnly;
 
-    const preview = document.getElementById('preview-list');
-    const label   = document.getElementById('preview-label');
-    label.textContent = `${parsedImport.length} new entries (${dupes} duplicates skipped)`;
-    preview.innerHTML = parsedImport.slice(0, 50).map(b =>
-      `<div style="padding:2px 0; border-bottom:1px solid var(--border); display:flex; gap:10px;">
-        <span style="color:var(--accent2); min-width:90px;">${b.user_id || '—'}</span>
-        <span style="color:var(--muted); flex:1; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${esc(b.reason)}</span>
+    document.getElementById('preview-label').textContent =
+      `${parsedImport.length} new entries (${dupes} duplicates skipped)`;
+    document.getElementById('preview-list').innerHTML = parsedImport.slice(0, 50).map(b =>
+      `<div style="padding:3px 0;border-bottom:1px solid rgba(68,71,79,0.4);display:flex;gap:10px;">
+        <span style="color:var(--md-sys-color-primary);min-width:90px;">${b.user_id||'—'}</span>
+        <span style="color:var(--md-sys-color-on-surface-variant);flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${esc(b.reason)}</span>
         <span style="color:var(--amber);">[${b.category}]</span>
       </div>`
-    ).join('') + (parsedImport.length > 50 ? `<div style="color:var(--muted); padding-top:4px;">...and ${parsedImport.length - 50} more</div>` : '');
+    ).join('') + (parsedImport.length > 50 ? `<div style="color:var(--md-sys-color-on-surface-variant);padding-top:4px;">...and ${parsedImport.length-50} more</div>` : '');
 
     document.getElementById('import-preview').style.display = 'block';
-    document.getElementById('btn-confirm-import').style.display = parsedImport.length ? 'block' : 'none';
-    document.getElementById('btn-confirm-import').textContent = `Import ${parsedImport.length} Bans`;
+    const confirmBtn = document.getElementById('btn-confirm-import');
+    confirmBtn.style.display = parsedImport.length ? 'inline-flex' : 'none';
+    confirmBtn.textContent = `Import ${parsedImport.length}`;
   }
 
   async function confirmImport() {
@@ -901,23 +1250,18 @@
     const status   = document.getElementById('import-status');
     progress.style.display = 'block';
     document.getElementById('btn-confirm-import').disabled = true;
-
-    // Insert in batches of 50
-    const BATCH = 50;
     let done = 0;
-    for (let i = 0; i < parsedImport.length; i += BATCH) {
-      const batch = parsedImport.slice(i, i + BATCH);
-      const { error } = await sb.from('bans').insert(batch);
-      if (error) {
-        showToast('Import error: ' + error.message, 'error');
-        break;
-      }
-      done += batch.length;
-      const pct = Math.round((done / parsedImport.length) * 100);
-      bar.style.width = pct + '%';
+    for (const entry of parsedImport) {
+      const res = await fetch('/api/ban', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${authToken}` },
+        body: JSON.stringify(entry)
+      });
+      if (!res.ok) { showToast('Import error on entry ' + entry.user_id, 'error'); break; }
+      done++;
+      bar.style.width = Math.round((done / parsedImport.length) * 100) + '%';
       status.textContent = `Imported ${done} / ${parsedImport.length}...`;
     }
-
     status.textContent = `Done! ${done} bans imported.`;
     bar.style.width = '100%';
     showToast(`Imported ${done} bans`, 'success');
@@ -925,33 +1269,25 @@
     loadBans();
   }
 
-  // ── Password reset/invite token detection ──────────────────────────────────
-  // Supabase puts #access_token=...&type=recovery (or invite) in the URL hash
+  // ── Password reset ─────────────────────────────────────────────────────────
   (function checkResetToken() {
     const hash = window.location.hash;
     if (!hash) return;
     const params = new URLSearchParams(hash.replace('#', ''));
     const type = params.get('type');
     if (type === 'recovery' || type === 'invite' || type === 'signup') {
-      // Supabase JS v2 picks up the token from the URL automatically
-      // We just need to listen for the session being set, then show the form
-      sb.auth.onAuthStateChange((event, session) => {
-        if ((event === 'PASSWORD_RECOVERY' || event === 'SIGNED_IN') && session) {
-          const modal = document.getElementById('reset-modal');
-          const title = document.getElementById('reset-title');
-          const sub   = document.getElementById('reset-subtitle');
-          if (type === 'invite' || type === 'signup') {
-            title.textContent = 'Welcome — set your password';
-            sub.textContent   = 'You have been invited as an admin. Set a password to continue.';
-          } else {
-            title.textContent = 'Reset your password';
-            sub.textContent   = 'Enter a new password for your admin account.';
-          }
-          modal.style.display = 'flex';
-          // Clear the hash so it doesn't trigger again on refresh
-          history.replaceState(null, '', window.location.pathname);
-        }
-      });
+      const modal = document.getElementById('reset-modal');
+      const title = document.getElementById('reset-title');
+      const sub   = document.getElementById('reset-subtitle');
+      if (type === 'invite' || type === 'signup') {
+        title.textContent = 'Welcome — set your password';
+        sub.textContent   = 'You have been invited as an admin. Set a password to continue.';
+      } else {
+        title.textContent = 'Reset your password';
+        sub.textContent   = 'Enter a new password for your admin account.';
+      }
+      modal.classList.add('open');
+      history.replaceState(null, '', window.location.pathname);
     }
   })();
 
@@ -960,28 +1296,19 @@
     const pw2 = document.getElementById('reset-pw2').value;
     const err = document.getElementById('reset-err');
     err.style.display = 'none';
+    if (pw.length < 6) { err.textContent = 'Password must be at least 6 characters.'; err.style.display = 'block'; return; }
+    if (pw !== pw2)    { err.textContent = 'Passwords do not match.'; err.style.display = 'block'; return; }
 
-    if (pw.length < 6) {
-      err.textContent = 'Password must be at least 6 characters.';
-      err.style.display = 'block';
-      return;
-    }
-    if (pw !== pw2) {
-      err.textContent = 'Passwords do not match.';
-      err.style.display = 'block';
-      return;
-    }
-
-    const { data, error } = await sb.auth.updateUser({ password: pw });
-    if (error) {
-      err.textContent = error.message;
-      err.style.display = 'block';
-      return;
-    }
-
-    document.getElementById('reset-modal').style.display = 'none';
-    showToast('Password set! You are now logged in.', 'success');
-    onAdminLogin(data.user);
+    const token = new URLSearchParams(window.location.hash.replace('#','')).get('access_token');
+    const res = await fetch('/api/set-password', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+      body: JSON.stringify({ password: pw })
+    });
+    if (!res.ok) { const e = await res.json(); err.textContent = e.error; err.style.display = 'block'; return; }
+    document.getElementById('reset-modal').classList.remove('open');
+    showToast('Password set! Please sign in.', 'success');
+    setTimeout(openLogin, 800);
   }
 
   // ── Helpers ────────────────────────────────────────────────────────────────
@@ -991,17 +1318,109 @@
 
   function fmtDate(iso) {
     if (!iso) return '—';
-    const d = new Date(iso);
-    return d.toLocaleDateString('en-AU', { day:'2-digit', month:'short', year:'numeric' });
+    return new Date(iso).toLocaleDateString('en-AU', { day:'2-digit', month:'short', year:'numeric' });
   }
 
-  let toastTimer;
+  let snackTimer;
   function showToast(msg, type = '') {
-    const t = document.getElementById('toast');
-    t.textContent = msg;
-    t.className = 'toast show ' + type;
-    clearTimeout(toastTimer);
-    toastTimer = setTimeout(() => t.className = 'toast', 3000);
+    const s = document.getElementById('snackbar');
+    s.textContent = msg;
+    s.className = 'snackbar show ' + type;
+    clearTimeout(snackTimer);
+    snackTimer = setTimeout(() => s.className = 'snackbar', 3000);
+  }
+
+  // ── Admin tabs ─────────────────────────────────────────────────────────────
+  function switchTab(tab) {
+    document.getElementById('tab-content-bans').style.display        = tab === 'bans'        ? 'block' : 'none';
+    document.getElementById('tab-content-suggestions').style.display = tab === 'suggestions' ? 'block' : 'none';
+    document.getElementById('tab-bans').classList.toggle('active',        tab === 'bans');
+    document.getElementById('tab-suggestions').classList.toggle('active', tab === 'suggestions');
+    if (tab === 'suggestions') loadSuggestions();
+  }
+
+  // ── Suggestions (admin) ────────────────────────────────────────────────────
+  async function loadSuggestions() {
+    const el = document.getElementById('suggestions-list');
+    el.innerHTML = '<div style="color:var(--md-sys-color-on-surface-variant);font-size:0.875rem;padding:0.5rem 0;">Loading...</div>';
+    const res = await fetch('/api/suggestions', { headers: { 'Authorization': `Bearer ${authToken}` } });
+    if (!res.ok) { el.innerHTML = '<div style="color:var(--md-sys-color-error);font-size:0.875rem;">Failed to load.</div>'; return; }
+    const list = await res.json();
+
+    const badge = document.getElementById('suggestion-badge');
+    if (list.length > 0) { badge.textContent = list.length; badge.style.display = 'inline'; }
+    else { badge.style.display = 'none'; }
+
+    if (!list.length) {
+      el.innerHTML = '<div style="color:var(--md-sys-color-on-surface-variant);font-size:0.875rem;padding:0.5rem 0;">No suggestions yet.</div>';
+      return;
+    }
+    el.innerHTML = list.map(s => `
+      <div class="suggestion-card">
+        <div class="suggestion-card-header">
+          <div class="suggestion-card-meta">
+            <span style="font-weight:500;color:var(--md-sys-color-on-surface);">${esc(s.username||'—')}</span>
+            <span class="userid">${esc(s.user_id||'—')}</span>
+            <span class="cat-chip ${s.category||'other'}">${s.category||'other'}</span>
+          </div>
+          <div class="suggestion-card-actions">
+            <button class="btn-filled" style="padding:6px 14px;font-size:0.78rem;" onclick="approveSuggestion('${s.id}',${JSON.stringify(s.username||'')},${JSON.stringify(s.user_id||'')},${JSON.stringify(s.reason||'')},${JSON.stringify(s.category||'other')})">Ban</button>
+            <button class="btn-text" style="font-size:0.78rem;color:var(--md-sys-color-on-surface-variant);" onclick="dismissSuggestion('${s.id}')">Dismiss</button>
+          </div>
+        </div>
+        <div class="suggestion-reason">${esc(s.reason||'—')}</div>
+        ${s.submitted_by && s.submitted_by !== 'anonymous' ? `<div class="suggestion-submitter">Submitted by ${esc(s.submitted_by)}</div>` : ''}
+      </div>`).join('');
+  }
+
+  async function approveSuggestion(id, username, user_id, reason, category) {
+    const res = await fetch('/api/ban', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${authToken}` },
+      body: JSON.stringify({ username, user_id, reason, category })
+    });
+    if (!res.ok) { showToast('Failed to add ban', 'error'); return; }
+    await dismissSuggestion(id);
+    showToast('Approved & banned', 'success');
+    loadBans();
+  }
+
+  async function dismissSuggestion(id) {
+    const res = await fetch('/api/suggestions', {
+      method: 'DELETE',
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${authToken}` },
+      body: JSON.stringify({ id })
+    });
+    if (!res.ok) { showToast('Failed to dismiss', 'error'); return; }
+    loadSuggestions();
+  }
+
+  // ── Suggest modal (public) ─────────────────────────────────────────────────
+  function openSuggest()  { document.getElementById('suggest-modal').classList.add('open'); }
+  function closeSuggest() {
+    document.getElementById('suggest-modal').classList.remove('open');
+    document.getElementById('suggest-err').style.display = 'none';
+    ['s-userid','s-username','s-reason','s-submitter'].forEach(id => document.getElementById(id).value = '');
+  }
+
+  async function submitSuggestion() {
+    const user_id      = document.getElementById('s-userid').value.trim();
+    const username     = document.getElementById('s-username').value.trim();
+    const reason       = document.getElementById('s-reason').value.trim();
+    const category     = document.getElementById('s-category').value;
+    const submitted_by = document.getElementById('s-submitter').value.trim();
+    const err = document.getElementById('suggest-err');
+    err.style.display = 'none';
+    if (!user_id && !username) { err.textContent = 'User ID or username required.'; err.style.display = 'block'; return; }
+    if (!reason)               { err.textContent = 'Please provide a reason.';       err.style.display = 'block'; return; }
+    const res = await fetch('/api/suggest', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ user_id, username, reason, category, submitted_by: submitted_by || 'anonymous' })
+    });
+    if (!res.ok) { err.textContent = 'Submission failed. Try again.'; err.style.display = 'block'; return; }
+    closeSuggest();
+    showToast('Suggestion submitted — thanks!', 'success');
   }
 
   loadBans();
